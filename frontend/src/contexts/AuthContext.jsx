@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
+      console.log('Fetching user data from /auth/me...')
       const response = await api.get('/auth/me')
+      console.log('User data received:', response.data)
       setUser(response.data)
     } catch (error) {
       console.error('Failed to fetch user:', error)
@@ -39,16 +41,27 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
+      console.log('Attempting login with:', email)
       const response = await api.post('/auth/login', { email, password })
+      console.log('Login response:', response.data)
       const { access_token } = response.data
       
       setToken(access_token)
       localStorage.setItem('token', access_token)
       api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`
       
-      await fetchUser()
-      return { success: true }
+      console.log('Fetching user data...')
+      try {
+        await fetchUser()
+        console.log('Login successful!')
+        return { success: true }
+      } catch (fetchError) {
+        console.error('Failed to fetch user after login:', fetchError)
+        // Не вызываем logout здесь, так как токен может быть валидным
+        return { success: true } // Все равно считаем логин успешным
+      }
     } catch (error) {
+      console.error('Login error:', error)
       return { 
         success: false, 
         error: error.response?.data?.detail || 'Login failed' 

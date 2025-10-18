@@ -8,7 +8,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # Изменяем порт на хосте на 5433, чтобы избежать конфликта с локальным PostgreSQL
+      - "127.0.0.1:5433:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U aiverse_user -d aiverse"]
       interval: 10s
@@ -32,9 +33,9 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
+      - "0.0.0.0:3000:3000"
     environment:
-      VITE_API_URL: http://localhost:80
+      VITE_API_URL: http://localhost
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -43,7 +44,9 @@ services:
   nginx:
     build: ./nginx
     ports:
-      - "80:80"
+      - "0.0.0.0:80:80"
+    volumes:
+      - ./backend/uploads:/usr/share/nginx/html/uploads:ro
     depends_on:
       - backend
       - frontend

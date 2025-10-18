@@ -7,13 +7,31 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
-    
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install linting dependencies
+      run: |
+        pip install ruff black
+    - name: Run Ruff linter
+      run: |
+        ruff check .
+    - name: Check formatting with Black
+      run: |
+        black --check .
+
+  test-backend:
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:15
         env:
+          POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: aiverse_test
         options: >-
@@ -24,40 +42,70 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        cd backend
-        pip install -r requirements.txt
-    
-    - name: Run tests
-      run: |
-        cd backend
-        python -m pytest tests/ || echo "No tests found"
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install backend dependencies
+      run: pip install -r backend/requirements.txt
+
+    - name: Run backend tests
+      working-directory: ./backend
+      run: python -m pytest
       env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/aiverse_test
+        # The hostname 'postgres' is automatically resolved to the service container
+        DATABASE_URL: postgresql://postgres:postgres@postgres:5432/aiverse_test
+        SECRET_KEY: test-secret-key
 
   build-and-deploy:
-    needs: test
+    needs: [lint, test-backend]
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     
     steps:
     - uses: actions/checkout@v4
     
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push backend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./backend
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/aiverse-backend:latest
+
+    - name: Build and push frontend image
+      uses: docker/build-push-action@v5
+      with:
+        context: ./frontend
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/aiverse-frontend:latest
+
     - name: Deploy to production
-      run: |
-        echo "Deploying to production..."
-        # Add your deployment commands here
-        # For example, if using Docker:
-        # docker-compose -f docker-compose.prod.yml up -d
-        
-        # Or if using a cloud provider:
-        # - Set up your cloud provider CLI
-        # - Build and push Docker images
-        # - Deploy to your hosting service
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.PROD_HOST }}
+        username: ${{ secrets.PROD_USERNAME }}
+        key: ${{ secrets.PROD_SSH_KEY }}
+        script: |
+          cd aiverse
+          git pull
+          export DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }}
+          docker-compose pull
+          docker-compose up -d --force-recreate

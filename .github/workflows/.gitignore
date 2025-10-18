@@ -1,0 +1,24 @@
+# Исключаем файлы с переменными окружения
+.env
+.env.*
+!.env.example
+
+# Исключаем директории с зависимостями
+backend/venv/
+frontend/node_modules/
+
+# Исключаем файлы Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Исключаем файлы сборки и дистрибутивы
+frontend/dist/
+
+# Логи и временные файлы
+*.log
+
+# Файлы IDE
+.idea/
+.vscode/

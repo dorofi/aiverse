@@ -6,9 +6,10 @@ import shutil
 from datetime import datetime
 
 from app.models import User, Post, Like, Comment
-from app.schemas import PostCreate, PostResponse, CommentCreate, CommentResponse
+from app.schemas import PostCreate, PostResponse, CommentCreate, CommentResponse 
 from app.database import get_db
-from app.routes.auth import get_current_user
+from app.routes.auth import get_current_user, get_current_user_optional
+from app.utils import get_posts_with_details
 
 router = APIRouter()
 
@@ -16,32 +17,16 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.get("/", response_model=List[PostResponse])
-def get_posts(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
-    posts = db.query(Post).offset(skip).limit(limit).all()
+def get_posts(
+    skip: int = 0,
+    limit: int = 20,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional)
+):
+    posts = db.query(Post).order_by(Post.created_at.desc()).offset(skip).limit(limit).all()
     
-    # Add likes and comments count
-    result = []
-    for post in posts:
-        likes_count = db.query(Like).filter(Like.post_id == post.id).count()
-        comments_count = db.query(Comment).filter(Comment.post_id == post.id).count()
-        
-        post_dict = {
-            "id": post.id,
-            "title": post.title,
-            "content": post.content,
-            "image_url": post.image_url,
-            "video_url": post.video_url,
-            "author_id": post.author_id,
-            "created_at": post.created_at,
-            "updated_at": post.updated_at,
-            "author": post.author,
-            "likes_count": likes_count,
-            "comments_count": comments_count,
-            "is_liked": False
-        }
-        result.append(PostResponse(**post_dict))
-    
-    return result
+    posts_with_details = get_posts_with_details(posts, db, current_user)
+    return [PostResponse(**p) for p in posts_with_details]
 
 @router.post("/", response_model=PostResponse)
 def create_post(
@@ -78,29 +63,17 @@ def create_post(
     return PostResponse(**post_dict)
 
 @router.get("/{post_id}", response_model=PostResponse)
-def get_post(post_id: int, db: Session = Depends(get_db)):
+def get_post(
+    post_id: int,
+    db: Session = Depends(get_db),
+    current_user: Optional[User] = Depends(get_current_user_optional)
+):
     post = db.query(Post).filter(Post.id == post_id).first()
     if not post:
         raise HTTPException(status_code=404, detail="Post not found")
     
-    likes_count = db.query(Like).filter(Like.post_id == post.id).count()
-    comments_count = db.query(Comment).filter(Comment.post_id == post.id).count()
-    
-    post_dict = {
-        "id": post.id,
-        "title": post.title,
-        "content": post.content,
-        "image_url": post.image_url,
-        "video_url": post.video_url,
-        "author_id": post.author_id,
-        "created_at": post.created_at,
-        "updated_at": post.updated_at,
-        "author": post.author,
-        "likes_count": likes_count,
-        "comments_count": comments_count,
-        "is_liked": False
-    }
-    return PostResponse(**post_dict)
+    post_with_details = get_posts_with_details([post], db, current_user)[0]
+    return PostResponse(**post_with_details)
 
 @router.post("/{post_id}/like")
 def toggle_like(

@@ -1,39 +1,54 @@
-from fastapi import FastAPI, Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
-from typing import Optional
 import os
 
-from app.database import get_db
-from app.models import User, Post, Like, Comment
-from app.schemas import UserCreate, UserLogin, PostCreate, PostResponse, UserResponse
-from app.routes import auth, posts
+from app.database import create_tables
+from app.routes import auth, posts, users
 
-app = FastAPI(title="AIverse API", version="1.0.0")
+# Создаем таблицы при запуске, если их нет
+create_tables()
+
+app = FastAPI(
+    title="AIverse API",
+    description="API для социальной сети AI-генерируемого контента",
+    version="1.0.0"
+)
 
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=[
+        "http://localhost",
+        "http://localhost:3000",
+        "http://127.0.0.1",
+        "http://127.0.0.1:3000",
+        "http://frontend:3000",  # Docker service name
+        "http://nginx:80",       # Docker service name
+        "http://172.20.10.8",    # Your local network IP
+        "http://172.20.10.8:3000",
+        "http://172.20.10.8:80",
+    ],
+    allow_origin_regex=r"http://172\.\d+\.\d+\.\d+(:\d+)?",  # Allow any 172.x.x.x IP
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],  # Разрешает все методы (GET, POST, и т.д.)
+    allow_headers=["*"],  # Разрешает все заголовки
 )
 
-# Mount static files
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
 # Include routers
-app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
-app.include_router(posts.router, prefix="/api/posts", tags=["posts"])
+app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
+app.include_router(posts.router, prefix="/api/posts", tags=["Posts"])
+app.include_router(users.router, prefix="/api/users", tags=["Users"])
 
+# Mount static files for uploads
+if os.path.exists("uploads"):
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# Health check endpoint
 @app.get("/")
-async def root():
+def read_root():
     return {"message": "AIverse API is running!"}
 
 @app.get("/api/health")
-async def health_check():
-    return {"status": "healthy", "timestamp": datetime.utcnow()}
+def health_check():
+    return {"status": "healthy", "message": "API is working correctly"}

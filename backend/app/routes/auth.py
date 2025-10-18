@@ -1,4 +1,3 @@
-from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from passlib.context import CryptContext
@@ -6,6 +5,7 @@ from datetime import datetime, timedelta
 import jwt
 import os
 from typing import List, Optional
+from sqlalchemy.orm import Session
 
 from app.models import User, Post, Like, Comment
 from app.schemas import UserCreate, UserLogin, UserResponse, Token
@@ -52,6 +52,22 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     user = db.query(User).filter(User.email == email).first()
     if user is None:
         raise credentials_exception
+    return user
+
+def get_current_user_optional(credentials: Optional[HTTPAuthorizationCredentials] = None, db: Session = Depends(get_db)):
+    """Optional authentication - returns user if token is valid, None otherwise"""
+    if not credentials:
+        return None
+    
+    try:
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+    except jwt.PyJWTError:
+        return None
+    
+    user = db.query(User).filter(User.email == email).first()
     return user
 
 @router.post("/register", response_model=UserResponse)
