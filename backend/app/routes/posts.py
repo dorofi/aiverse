@@ -4,6 +4,8 @@ from typing import List, Optional
 import os
 import shutil
 from datetime import datetime
+from PIL import Image
+import io
 
 from app.models import User, Post, Like, Comment
 from app.schemas import PostCreate, PostResponse, CommentCreate, CommentResponse 
@@ -135,16 +137,50 @@ async def upload_file(file: UploadFile = File(...)):
     if not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
     
+    # Check if file is an image
+    if not file.content_type or not file.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="Only image files are allowed")
+    
     # Generate unique filename with safe characters only
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    # Get file extension
-    file_extension = os.path.splitext(file.filename)[1] if '.' in file.filename else ''
-    # Generate safe filename
+    file_extension = os.path.splitext(file.filename)[1] if '.' in file.filename else '.jpg'
     safe_filename = f"{timestamp}_upload{file_extension}"
     file_path = os.path.join(UPLOAD_DIR, safe_filename)
     
-    # Save file
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    return {"filename": safe_filename, "url": f"/uploads/{safe_filename}"}
+    try:
+        # Read file content
+        file_content = await file.read()
+        
+        # Process image with PIL
+        image = Image.open(io.BytesIO(file_content))
+        
+        # Convert to RGB if necessary (for JPEG)
+        if image.mode in ('RGBA', 'LA', 'P'):
+            image = image.convert('RGB')
+        
+        # Instagram-like square crop (1:1 aspect ratio)
+        width, height = image.size
+        
+        # Determine the size for square crop
+        size = min(width, height)
+        
+        # Calculate crop coordinates for center crop
+        left = (width - size) // 2
+        top = (height - size) // 2
+        right = left + size
+        bottom = top + size
+        
+        # Crop to square
+        cropped_image = image.crop((left, top, right, bottom))
+        
+        # Resize to standard Instagram size (1080x1080 for high quality)
+        final_size = 1080
+        resized_image = cropped_image.resize((final_size, final_size), Image.Resampling.LANCZOS)
+        
+        # Save processed image
+        resized_image.save(file_path, 'JPEG', quality=85, optimize=True)
+        
+        return {"filename": safe_filename, "url": f"/uploads/{safe_filename}"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
