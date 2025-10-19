@@ -112,164 +112,99 @@ const CreatePost = () => {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Create New Post
-        </h1>
-        <p className="text-gray-600">
-          Share your AI-generated content with the community.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="card">
-        <div className="space-y-6">
-          {/* Title */}
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-              Title *
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              required
-              className="input-field"
-              placeholder="What's your AI creation about?"
-              value={formData.title}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Content */}
-          <div>
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-              Description
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              rows={4}
-              className="input-field"
-              placeholder="Tell us more about your AI-generated content..."
-              value={formData.content}
-              onChange={handleChange}
-            />
-          </div>
-
-          {/* Media Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Media
-            </label>
-            <div className="space-y-4">
-              {/* Image Upload */}
-              <div>
-                <label className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
-                  <Image className="w-4 h-4" />
-                  <span>Image</span>
-                </label>
-                {formData.image_url ? (
-                  <div className="relative">
-                    <img
-                      src={formData.image_url}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeMedia('image_url')}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleFileUpload(e.target.files[0], 'image')}
-                      className="hidden"
-                      id="image-upload"
-                    />
-                    <label
-                      htmlFor="image-upload"
-                      className="cursor-pointer flex flex-col items-center space-y-2"
-                    >
-                      <Upload className="w-8 h-8 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        {uploading ? 'Uploading...' : 'Click to upload image'}
-                      </span>
-                    </label>
-                  </div>
-                )}
-              </div>
-
-              {/* Video Upload */}
-              <div>
-                <label className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
-                  <Video className="w-4 h-4" />
-                  <span>Video</span>
-                </label>
-                {formData.video_url ? (
-                  <div className="relative">
-                    <video
-                      src={formData.video_url}
-                      controls
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeMedia('video_url')}
-                      className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={(e) => handleFileUpload(e.target.files[0], 'video')}
-                      className="hidden"
-                      id="video-upload"
-                    />
-                    <label
-                      htmlFor="video-upload"
-                      className="cursor-pointer flex flex-col items-center space-y-2"
-                    >
-                      <Upload className="w-8 h-8 text-gray-400" />
-                      <span className="text-sm text-gray-600">
-                        {uploading ? 'Uploading...' : 'Click to upload video'}
-                      </span>
-                    </label>
-                  </div>
-                )}
-              </div>
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+        {/* Upload Photo Area */}
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg p-6 text-center">
+          <div className="flex flex-col items-center space-y-3">
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Image className="w-6 h-6 text-white" />
             </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end space-x-4">
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="btn-secondary"
+            <div>
+              <h3 className="text-white font-medium">Upload photo</h3>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleFileUpload(e.target.files[0], 'image')}
+              className="hidden"
+              id="image-upload"
+            />
+            <label
+              htmlFor="image-upload"
+              className="cursor-pointer"
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading || uploading}
-              className="btn-primary"
-            >
-              {loading ? 'Creating...' : 'Create Post'}
-            </button>
+              <div className="w-full h-32 bg-white/10 rounded-lg flex items-center justify-center border-2 border-dashed border-white/30">
+                {formData.image_url ? (
+                  <img
+                    src={formData.image_url}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <Image className="w-8 h-8 text-white mx-auto mb-1" />
+                    <p className="text-white/80 text-sm">Tap to upload</p>
+                  </div>
+                )}
+              </div>
+            </label>
           </div>
         </div>
-      </form>
+
+        {/* Write Something */}
+        <div>
+          <input
+            type="text"
+            name="title"
+            placeholder="Title..."
+            className="w-full bg-gray-900 text-white placeholder-gray-400 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500 mb-3"
+            value={formData.title}
+            onChange={handleChange}
+          />
+          <textarea
+            name="content"
+            rows={3}
+            className="w-full bg-gray-900 text-white placeholder-gray-400 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500 resize-none"
+            placeholder="Write something..."
+            value={formData.content}
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Settings */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-white text-sm">Allow comments</span>
+            <div className="w-10 h-5 bg-green-500 rounded-full relative">
+              <div className="w-4 h-4 bg-white rounded-full absolute right-0.5 top-0.5"></div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-white text-sm">Everyone</span>
+            <div className="w-10 h-5 bg-gray-600 rounded-full relative">
+              <div className="w-4 h-4 bg-white rounded-full absolute left-0.5 top-0.5"></div>
+            </div>
+          </div>
+        </div>
+
+        {/* AI Tool Tag */}
+        <div className="bg-gray-900 rounded-lg p-3">
+          <p className="text-gray-400 text-xs">
+            Отметьте ИИ инструмент в котором вы это создавали, чтобы другим пользователям было проще
+          </p>
+        </div>
+
+        {/* Post Button */}
+        <button
+          onClick={handleSubmit}
+          disabled={loading || uploading}
+          className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-200 disabled:opacity-50"
+        >
+          {loading ? 'Creating...' : 'Post'}
+        </button>
+      </div>
     </div>
   )
 }

@@ -20,7 +20,7 @@ const Navbar = () => {
   return (
     <>
       {/* Desktop Navbar */}
-      <nav className="hidden sm:block bg-white/80 backdrop-blur-md shadow-sm border-b border-gray-200/50 sticky top-0 z-50">
+      <nav className="hidden sm:block bg-black/90 backdrop-blur-md shadow-sm border-b border-gray-800/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -101,7 +101,7 @@ const Navbar = () => {
       </nav>
 
       {/* Mobile Navbar */}
-      <nav className="sm:hidden bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-200/50 sticky top-0 z-50">
+      <nav className="sm:hidden bg-black/95 backdrop-blur-md shadow-sm border-b border-gray-800/50 sticky top-0 z-50">
         <div className="px-4">
           <div className="flex justify-between items-center h-16">
             {/* Mobile Logo */}
@@ -202,7 +202,7 @@ const Navbar = () => {
 
       {/* Mobile Bottom Navigation */}
       {isAuthenticated && (
-        <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200/50 z-50">
+        <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-black/95 backdrop-blur-md border-t border-gray-800/50 z-50">
           <div className="flex justify-around items-center py-2">
             <Link
               to="/"

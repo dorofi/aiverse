@@ -45,169 +45,88 @@ const Profile = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      {/* Profile Header */}
-      <div className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-700 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black opacity-10"></div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-          <div className="flex flex-col sm:flex-row items-center space-y-6 sm:space-y-0 sm:space-x-8">
-            {/* Avatar */}
-            <div className="relative group">
-              <div className="absolute -inset-2 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full blur-lg opacity-60 group-hover:opacity-80 transition duration-1000"></div>
-              <img
-                src={user.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`}
-                alt="Avatar"
-                className="relative h-28 w-28 sm:h-36 sm:w-36 rounded-full object-cover border-4 border-white shadow-2xl"
-              />
-              <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-green-500 rounded-full border-3 border-white flex items-center justify-center shadow-lg">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
+    <div className="min-h-screen bg-black text-white">
+      {/* Profile Info */}
+      <div className="max-w-2xl mx-auto px-4 py-4">
+        <div className="flex items-center space-x-4 mb-4">
+          <img
+            src={user.avatar_url || `https://i.pravatar.cc/150?u=${user.id}`}
+            alt="Avatar"
+            className="w-16 h-16 rounded-full object-cover"
+          />
+          <div className="flex-1">
+            <div className="flex items-center space-x-3 mb-1">
+              <h2 className="text-xl font-bold text-white">{user.full_name || user.username}</h2>
+              <button
+                onClick={() => setEditModalOpen(true)}
+                className="bg-gray-800 text-white px-3 py-1 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+              >
+                Edit Profile
+              </button>
             </div>
-
-            {/* Profile Info */}
-            <div className="text-center sm:text-left flex-1">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 mb-6">
-                <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-0">
-                  {user.full_name || user.username}
-                </h1>
-                <div className="flex items-center justify-center sm:justify-start space-x-3">
-                  <button
-                    onClick={() => setEditModalOpen(true)}
-                    className="bg-white/20 backdrop-blur-md text-white px-6 py-3 rounded-xl hover:bg-white/30 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl"
-                  >
-                    <Edit className="w-4 h-4" />
-                    <span className="font-medium">Edit Profile</span>
-                  </button>
-                  <button className="bg-white/20 backdrop-blur-md text-white p-3 rounded-xl hover:bg-white/30 transition-all duration-200 shadow-lg hover:shadow-xl">
-                    <Settings className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-              
-              <p className="text-white/90 text-xl mb-2 font-medium">@{user.username}</p>
-              <p className="text-white/80 text-sm mb-6">{user.email}</p>
-              
-              {/* Stats */}
-              <div className="flex items-center justify-center sm:justify-start space-x-8 text-white/90">
-                <div className="flex flex-col items-center sm:flex-row sm:space-x-2">
-                  <Grid className="w-5 h-5 mb-1 sm:mb-0" />
-                  <div className="text-center sm:text-left">
-                    <div className="text-lg font-bold">{posts?.length || 0}</div>
-                    <div className="text-xs opacity-80">posts</div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center sm:flex-row sm:space-x-2">
-                  <Heart className="w-5 h-5 mb-1 sm:mb-0" />
-                  <div className="text-center sm:text-left">
-                    <div className="text-lg font-bold">{totalLikes}</div>
-                    <div className="text-xs opacity-80">likes</div>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center sm:flex-row sm:space-x-2">
-                  <Calendar className="w-5 h-5 mb-1 sm:mb-0" />
-                  <div className="text-center sm:text-left">
-                    <div className="text-lg font-bold">Joined</div>
-                    <div className="text-xs opacity-80">{joinDate}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <p className="text-gray-400 text-sm">
+              {user.bio || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* Content Tabs */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 overflow-hidden">
-          {/* Tab Navigation */}
-          <div className="border-b border-gray-200 bg-gray-50/50">
-            <nav className="flex space-x-8 px-6">
-              <button
-                onClick={() => setShowPosts(true)}
-                className={`py-5 px-1 border-b-3 font-semibold text-sm transition-all duration-200 ${
-                  showPosts
-                    ? 'border-purple-500 text-purple-600 bg-white rounded-t-lg'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <Grid className="w-5 h-5" />
-                  <span>Posts</span>
-                </div>
-              </button>
-              <button
-                onClick={() => setShowPosts(false)}
-                className={`py-5 px-1 border-b-3 font-semibold text-sm transition-all duration-200 ${
-                  !showPosts
-                    ? 'border-purple-500 text-purple-600 bg-white rounded-t-lg'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
-              >
-                <div className="flex items-center space-x-2">
-                  <Heart className="w-5 h-5" />
-                  <span>Liked Posts</span>
-                </div>
-              </button>
-            </nav>
+        {/* Stats */}
+        <div className="flex justify-around mb-4">
+          <div className="text-center">
+            <div className="text-lg font-bold text-white">{posts?.length || 0}</div>
+            <div className="text-gray-400 text-sm">Posts</div>
           </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-white">2.5K</div>
+            <div className="text-gray-400 text-sm">Followers</div>
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-white">180</div>
+            <div className="text-gray-400 text-sm">Following</div>
+          </div>
+        </div>
 
-          {/* Tab Content */}
-          <div className="p-8">
-            {showPosts ? (
-              <div>
-                {/* Posts Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-                  <div className="mb-4 sm:mb-0">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Your Posts</h2>
-                    <p className="text-gray-600">Share your AI creations with the world</p>
-                  </div>
-                  <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl font-medium">
-                    <Plus className="w-5 h-5" />
-                    <span>Create Post</span>
-                  </button>
-                </div>
-
-                {/* Posts Grid/List */}
-                {isLoading ? (
-                  <div className="space-y-6 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
-                    <PostSkeleton />
-                    <PostSkeleton />
-                    <PostSkeleton />
-                  </div>
-                ) : posts && posts.length > 0 ? (
-                  <div className="space-y-6 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
-                    {posts.map((post) => (
-                      <PostCard key={post.id} post={post} />
-                    ))}
-                  </div>
+        {/* Posts Grid */}
+        {isLoading ? (
+          <div className="grid grid-cols-3 gap-2">
+            {[...Array(9)].map((_, i) => (
+              <div key={i} className="aspect-square bg-gray-800 rounded-lg animate-pulse"></div>
+            ))}
+          </div>
+        ) : posts && posts.length > 0 ? (
+          <div className="grid grid-cols-3 gap-2">
+            {posts.map((post) => (
+              <div key={post.id} className="aspect-square bg-gray-800 rounded-lg overflow-hidden">
+                {post.image_url ? (
+                  <img
+                    src={post.image_url}
+                    alt={post.title}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <div className="text-center py-16">
-                    <div className="p-8 bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl max-w-md mx-auto border border-purple-100">
-                      <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                        <Plus className="w-10 h-10 text-white" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">No posts yet</h3>
-                      <p className="text-gray-600 mb-6">Start sharing your AI creations and inspire others!</p>
-                      <button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl">
-                        Create Your First Post
-                      </button>
-                    </div>
+                  <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    <span className="text-white text-xs">No image</span>
                   </div>
                 )}
               </div>
-            ) : (
-              <div className="text-center py-16">
-                <div className="p-8 bg-gradient-to-br from-red-50 to-pink-50 rounded-2xl max-w-md mx-auto border border-red-100">
-                  <div className="w-20 h-20 bg-gradient-to-r from-red-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                    <Heart className="w-10 h-10 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">No liked posts yet</h3>
-                  <p className="text-gray-600">Posts you like will appear here</p>
-                </div>
-              </div>
-            )}
+            ))}
+            {/* Fill remaining slots with placeholder */}
+            {[...Array(Math.max(0, 9 - posts.length))].map((_, i) => (
+              <div key={`placeholder-${i}`} className="aspect-square bg-gray-800 rounded-lg"></div>
+            ))}
           </div>
-        </div>
+        ) : (
+          <div className="text-center py-8">
+            <div className="p-4 bg-gray-900 rounded-xl max-w-md mx-auto border border-gray-700">
+              <Sparkles className="h-8 w-8 text-gray-400 mx-auto mb-3" />
+              <h3 className="text-base font-semibold text-white mb-2">No posts yet</h3>
+              <p className="text-gray-400 mb-3 text-sm">Start sharing your AI creations!</p>
+              <button className="bg-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-purple-700 transition-all duration-200 text-sm">
+                Create Post
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Edit Profile Modal */}

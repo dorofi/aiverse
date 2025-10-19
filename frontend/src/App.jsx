@@ -12,7 +12,7 @@ import PostDetail from './pages/PostDetail'
 function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
+      <div className="min-h-screen bg-black text-white">
         <Navbar />
         <main className="pb-20 sm:pb-8">
           <Routes>
