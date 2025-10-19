@@ -15,7 +15,7 @@ const PostSkeleton = () => {
         <div className="h-4 w-4 sm:h-5 sm:w-5 bg-gray-200 rounded flex-shrink-0"></div>
       </div>
 
-      {/* Image */}
+      {/* Image - Full width on mobile, square on desktop */}
       <div className="aspect-square bg-gray-300"></div>
 
       {/* Actions */}

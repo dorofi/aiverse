@@ -62,10 +62,10 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Posts Grid */}
+      {/* Posts Feed */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8 py-6 sm:py-12">
         {isLoading && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          <div className="space-y-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
             <PostSkeleton />
             <PostSkeleton />
             <PostSkeleton />
@@ -88,7 +88,7 @@ const Home = () => {
         )}
 
         {posts && posts.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+          <div className="space-y-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:space-y-0">
             {posts.map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
