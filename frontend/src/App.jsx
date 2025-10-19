@@ -12,9 +12,9 @@ import PostDetail from './pages/PostDetail'
 function App() {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
         <Navbar />
-        <main className="container mx-auto px-4 py-8">
+        <main className="pb-20 sm:pb-8">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
