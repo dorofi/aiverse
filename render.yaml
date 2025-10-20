@@ -7,6 +7,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: VITE_API_URL
+        value: https://aiverse-backend.onrender.com
     buildCommand: ""
     startCommand: ""
     healthCheckPath: /

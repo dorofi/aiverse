@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || (window.location.hostname === 'aiverse-1-yz9e.onrender.com' ? 'https://aiverse-backend.onrender.com' : 'http://localhost:8000')
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export const api = axios.create({
   baseURL: `${API_URL}/api`,

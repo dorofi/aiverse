@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: aiverse-backend
+    env: docker
+    dockerfilePath: ./backend/Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://aiverse_user:${POSTGRES_PASSWORD}@postgres:5432/aiverse
+      - key: SECRET_KEY
+        value: ${SECRET_KEY}
+    buildCommand: ""
+    startCommand: ""
+    healthCheckPath: /api/health
+    autoDeploy: true
+    branch: main
+    repo: https://github.com/dorofi/aiverse
