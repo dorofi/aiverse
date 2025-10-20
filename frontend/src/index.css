@@ -11,6 +11,18 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+  
+  /* Fix for mobile input text visibility */
+  input, textarea {
+    -webkit-text-fill-color: #374151 !important;
+    color: #374151 !important;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  input:focus, textarea:focus {
+    -webkit-text-fill-color: #374151 !important;
+    color: #374151 !important;
+  }
 }
 
 @layer components {
@@ -24,6 +36,10 @@
   
   .input-field {
     @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200;
+    /* Fix for mobile text input visibility */
+    -webkit-text-fill-color: #374151;
+    color: #374151;
+    font-size: 16px; /* Prevent zoom on iOS */
   }
   
   .card {
