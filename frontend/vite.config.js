@@ -7,6 +7,11 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 3000,
+    allowedHosts: [
+      'localhost',
+      'aiverse-1-yz9e.onrender.com',
+      '.onrender.com'
+    ],
     watch: {
       usePolling: true
     }

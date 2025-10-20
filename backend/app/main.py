@@ -28,8 +28,10 @@ app.add_middleware(
         "http://172.20.10.8",    # Your local network IP
         "http://172.20.10.8:3000",
         "http://172.20.10.8:80",
+        "https://aiverse-1-yz9e.onrender.com",  # Render production URL
+        "http://aiverse-1-yz9e.onrender.com",   # Render production URL (HTTP)
     ],
-    allow_origin_regex=r"http://172\.\d+\.\d+\.\d+(:\d+)?",  # Allow any 172.x.x.x IP
+    allow_origin_regex=r"(http://172\.\d+\.\d+\.\d+(:\d+)?|https?://.*\.onrender\.com)",  # Allow any 172.x.x.x IP and Render domains
     allow_credentials=True,
     allow_methods=["*"],  # Разрешает все методы (GET, POST, и т.д.)
     allow_headers=["*"],  # Разрешает все заголовки
