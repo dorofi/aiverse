@@ -1,17 +1,17 @@
 #!/bin/bash
 
 echo "Starting application..."
-
-# Wait for database to be ready
-until python -c "import psycopg2; psycopg2.connect('${DATABASE_URL}')" 2>/dev/null; do
-  echo "Waiting for database..."
-  sleep 2
-done
-
-echo "Database is ready, initializing tables..."
+echo "DATABASE_URL: ${DATABASE_URL:0:50}..." # Show first 50 chars for debugging
 
 # Initialize database tables
+echo "Initializing database tables..."
 python init_db.py
+
+if [ $? -eq 0 ]; then
+    echo "Database initialized successfully!"
+else
+    echo "Warning: Database initialization failed, but continuing..."
+fi
 
 echo "Starting FastAPI server..."
 

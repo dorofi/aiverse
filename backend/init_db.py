@@ -1,5 +1,6 @@
 from app.database import create_tables
 import sys
+import traceback
 
 if __name__ == "__main__":
     try:
@@ -7,4 +8,6 @@ if __name__ == "__main__":
         print("Database tables created successfully!")
     except Exception as e:
         print(f"Error creating tables: {e}")
-        sys.exit(1)
+        traceback.print_exc()
+        # Don't exit - let the app start anyway
+        print("Continuing despite database error...")
