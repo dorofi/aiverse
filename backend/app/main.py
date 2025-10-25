@@ -6,9 +6,6 @@ import os
 from app.database import create_tables
 from app.routes import auth, posts, users
 
-# Создаем таблицы при запуске, если их нет
-create_tables()
-
 app = FastAPI(
     title="AIverse API",
     description="API для социальной сети AI-генерируемого контента",
