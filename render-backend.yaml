@@ -6,7 +6,7 @@ services:
     plan: free
     envVars:
       - key: DATABASE_URL
-        value: postgresql://aiverse_user:${POSTGRES_PASSWORD}@postgres:5432/aiverse
+        value: ${DATABASE_URL}
       - key: SECRET_KEY
         value: ${SECRET_KEY}
     buildCommand: ""
