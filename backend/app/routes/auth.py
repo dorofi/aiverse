@@ -8,7 +8,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from app.models import User, Post, Like, Comment
-from app.schemas import UserCreate, UserLogin, UserResponse, Token
+from app.schemas import UserCreate, UserLogin, UserResponse, UserUpdate, Token
 from app.database import get_db
 
 router = APIRouter()
@@ -114,4 +114,33 @@ def login(user_credentials: UserLogin, db: Session = Depends(get_db)):
 
 @router.get("/me", response_model=UserResponse)
 def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
+
+@router.patch("/me", response_model=UserResponse)
+def update_users_me(user_update: UserUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Update current user profile"""
+    # Check if username or email already exists (but not for current user)
+    if user_update.username:
+        existing_user = db.query(User).filter(
+            User.username == user_update.username,
+            User.id != current_user.id
+        ).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Username already taken")
+    
+    if user_update.email:
+        existing_user = db.query(User).filter(
+            User.email == user_update.email,
+            User.id != current_user.id
+        ).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="Email already taken")
+    
+    # Update only provided fields
+    update_data = user_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(current_user, field, value)
+    
+    db.commit()
+    db.refresh(current_user)
     return current_user

@@ -42,7 +42,7 @@ const PostCard = ({ post }) => {
   };
 
   return (
-    <div className="bg-black border border-gray-800 rounded-lg overflow-hidden">
+    <div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-xl overflow-hidden shadow-lg">
       {/* Post Header */}
       <div className="flex items-center justify-between p-3">
         <div className="flex items-center space-x-3">
@@ -70,21 +70,21 @@ const PostCard = ({ post }) => {
 
       {/* Post Media */}
       {post.image_url && (
-        <div className="relative">
+        <div className="relative px-3 pb-3">
           <img 
             src={post.image_url} 
             alt={post.title} 
-            className="w-full aspect-square object-cover" 
+            className="w-full aspect-[4/3] object-cover rounded-lg" 
           />
         </div>
       )}
 
       {post.video_url && (
-        <div className="relative">
+        <div className="relative px-3 pb-3">
           <video 
             src={post.video_url} 
             controls 
-            className="w-full aspect-square object-cover" 
+            className="w-full aspect-[4/3] object-cover rounded-lg" 
           />
         </div>
       )}

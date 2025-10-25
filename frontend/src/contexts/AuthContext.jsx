@@ -88,11 +88,25 @@ export const AuthProvider = ({ children }) => {
     delete api.defaults.headers.common['Authorization']
   }
 
+  const updateUser = async (updatedData) => {
+    try {
+      const response = await api.patch('/auth/me', updatedData)
+      setUser(response.data)
+      return { success: true }
+    } catch (error) {
+      return { 
+        success: false, 
+        error: error.response?.data?.detail || 'Failed to update profile' 
+      }
+    }
+  }
+
   const value = {
     user,
     login,
     register,
     logout,
+    updateUser,
     loading,
     isAuthenticated: !!user
   }

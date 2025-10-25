@@ -64,9 +64,11 @@ const Profile = () => {
                 Edit Profile
               </button>
             </div>
-            <p className="text-gray-400 text-sm">
-              {user.bio || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-            </p>
+            {user.bio && (
+              <p className="text-gray-400 text-sm">
+                {user.bio}
+              </p>
+            )}
           </div>
         </div>
 
@@ -96,7 +98,7 @@ const Profile = () => {
         ) : posts && posts.length > 0 ? (
           <div className="grid grid-cols-3 gap-2">
             {posts.map((post) => (
-              <div key={post.id} className="aspect-square bg-gray-800 rounded-lg overflow-hidden">
+              <div key={post.id} className="aspect-square bg-gray-800 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
                 {post.image_url ? (
                   <img
                     src={post.image_url}
@@ -109,10 +111,6 @@ const Profile = () => {
                   </div>
                 )}
               </div>
-            ))}
-            {/* Fill remaining slots with placeholder */}
-            {[...Array(Math.max(0, 9 - posts.length))].map((_, i) => (
-              <div key={`placeholder-${i}`} className="aspect-square bg-gray-800 rounded-lg"></div>
             ))}
           </div>
         ) : (

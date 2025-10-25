@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { api } from '../api/api';
+import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { X, Upload } from 'lucide-react';
 
 const EditProfileModal = ({ user, onClose }) => {
+  const { updateUser } = useAuth();
   const [formData, setFormData] = useState({
     full_name: '',
     username: '',
     email: '',
+    bio: '',
     avatar_url: '',
   });
   const [uploading, setUploading] = useState(false);
@@ -20,25 +23,11 @@ const EditProfileModal = ({ user, onClose }) => {
         full_name: user.full_name || '',
         username: user.username || '',
         email: user.email || '',
+        bio: user.bio || '',
         avatar_url: user.avatar_url || '',
       });
     }
   }, [user]);
-
-  const updateProfileMutation = useMutation(
-    (updatedData) => api.patch('/auth/me', updatedData),
-    {
-      onSuccess: (data) => {
-        queryClient.setQueryData('user', data); // Обновляем данные пользователя в кэше
-        queryClient.invalidateQueries('posts'); // Обновляем посты, чтобы отобразить новый аватар
-        toast.success('Profile updated successfully!');
-        onClose();
-      },
-      onError: (error) => {
-        toast.error(error.response?.data?.detail || 'Failed to update profile.');
-      },
-    }
-  );
 
   const handleFileUpload = async (file) => {
     if (!file) return;
@@ -62,9 +51,17 @@ const EditProfileModal = ({ user, onClose }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    updateProfileMutation.mutate(formData);
+    const result = await updateUser(formData);
+    if (result.success) {
+      queryClient.invalidateQueries('posts');
+      queryClient.invalidateQueries('userPosts');
+      toast.success('Profile updated successfully!');
+      onClose();
+    } else {
+      toast.error(result.error || 'Failed to update profile.');
+    }
   };
 
   return (
@@ -134,13 +131,25 @@ const EditProfileModal = ({ user, onClose }) => {
                 className="input-field mt-1 w-full"
               />
             </div>
+            <div>
+              <label htmlFor="bio" className="block text-sm font-medium text-gray-700">Bio</label>
+              <textarea
+                name="bio"
+                id="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                rows="3"
+                className="input-field mt-1 w-full"
+                placeholder="Tell us about yourself..."
+              />
+            </div>
           </div>
           <div className="p-6 bg-gray-50 rounded-b-lg flex justify-end space-x-3">
             <button type="button" onClick={onClose} className="btn-secondary">
               Cancel
             </button>
-            <button type="submit" className="btn-primary" disabled={updateProfileMutation.isLoading || uploading}>
-              {updateProfileMutation.isLoading ? 'Saving...' : 'Save Changes'}
+            <button type="submit" className="btn-primary" disabled={uploading}>
+              {uploading ? 'Saving...' : 'Save Changes'}
             </button>
           </div>
         </form>

@@ -14,9 +14,28 @@ const Home = () => {
   const { data: posts, isLoading, isError, error } = useQuery('posts', fetchPosts);
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Decorative Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none">
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-black to-blue-900/20"></div>
+        
+        {/* Animated grid pattern */}
+        <div className="absolute inset-0 opacity-10" style={{
+          backgroundImage: `
+            linear-gradient(to right, rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(139, 92, 246, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px'
+        }}></div>
+        
+        {/* Decorative circles */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+      </div>
+
       {/* Posts Feed */}
-      <div className="max-w-2xl mx-auto px-4 py-4 space-y-4">
+      <div className="max-w-xl mx-auto px-4 py-4 space-y-4 relative z-10">
         {isLoading && (
           <div className="space-y-4">
             <PostSkeleton />
